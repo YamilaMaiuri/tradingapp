@@ -1,0 +1,19 @@
+{
+  "cash_ars": 150000.0,
+  "cash_usd": 10000.0,
+  "posiciones": [
+    {
+      "activo": "YPF",
+      "cantidad": 100,
+      "precio_promedio": 16500.0,
+      "mercado": "BYMA"
+    },
+    {
+      "activo": "AL30",
+      "cantidad": 200,
+      "precio_promedio": 325.5,
+      "mercado": "BYMA"
+    }
+  ],
+  "last_updated": "2026-05-18T08:58:15.150875"
+}

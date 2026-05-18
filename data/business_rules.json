@@ -1,0 +1,16 @@
+{
+  "reglas": [
+    {
+      "id": "R001",
+      "nombre": "Arbitraje BYMA-A3",
+      "activa": true,
+      "ejecuciones": 0
+    },
+    {
+      "id": "R002",
+      "nombre": "Stop Loss",
+      "activa": true,
+      "ejecuciones": 0
+    }
+  ]
+}

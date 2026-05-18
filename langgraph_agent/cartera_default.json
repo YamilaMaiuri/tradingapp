@@ -1,0 +1,120 @@
+{
+  "cliente": {
+    "id": "CLI-001",
+    "nombre": "Cliente Demo",
+    "perfil_riesgo": "MODERADO",
+    "capital_total": 50000.00,
+    "fecha_apertura": "2024-01-15"
+  },
+  "posiciones": [
+    {
+      "simbolo": "AAPL",
+      "nombre": "Apple Inc.",
+      "cantidad": 50,
+      "precio_compra": 145.00,
+      "precio_actual": 150.50,
+      "fecha_compra": "2024-03-10",
+      "sector": "Tecnología"
+    },
+    {
+      "simbolo": "GOOGL",
+      "nombre": "Alphabet Inc.",
+      "cantidad": 20,
+      "precio_compra": 140.00,
+      "precio_actual": 142.30,
+      "fecha_compra": "2024-02-15",
+      "sector": "Tecnología"
+    },
+    {
+      "simbolo": "MSFT",
+      "nombre": "Microsoft Corporation",
+      "cantidad": 30,
+      "precio_compra": 380.00,
+      "precio_actual": 385.20,
+      "fecha_compra": "2024-01-20",
+      "sector": "Tecnología"
+    },
+    {
+      "simbolo": "JPM",
+      "nombre": "JPMorgan Chase & Co.",
+      "cantidad": 25,
+      "precio_compra": 155.00,
+      "precio_actual": 158.75,
+      "fecha_compra": "2024-03-01",
+      "sector": "Financiero"
+    },
+    {
+      "simbolo": "JNJ",
+      "nombre": "Johnson & Johnson",
+      "cantidad": 40,
+      "precio_compra": 160.00,
+      "precio_actual": 162.50,
+      "fecha_compra": "2024-02-20",
+      "sector": "Salud"
+    }
+  ],
+  "transacciones_historicas": [
+    {
+      "id": "TRX-001",
+      "fecha": "2024-01-15",
+      "tipo": "COMPRA",
+      "simbolo": "AAPL",
+      "cantidad": 50,
+      "precio": 145.00,
+      "monto_total": 7250.00
+    },
+    {
+      "id": "TRX-002",
+      "fecha": "2024-01-20",
+      "tipo": "COMPRA",
+      "simbolo": "MSFT",
+      "cantidad": 30,
+      "precio": 380.00,
+      "monto_total": 11400.00
+    },
+    {
+      "id": "TRX-003",
+      "fecha": "2024-02-15",
+      "tipo": "COMPRA",
+      "simbolo": "GOOGL",
+      "cantidad": 20,
+      "precio": 140.00,
+      "monto_total": 2800.00
+    },
+    {
+      "id": "TRX-004",
+      "fecha": "2024-02-20",
+      "tipo": "COMPRA",
+      "simbolo": "JNJ",
+      "cantidad": 40,
+      "precio": 160.00,
+      "monto_total": 6400.00
+    },
+    {
+      "id": "TRX-005",
+      "fecha": "2024-03-01",
+      "tipo": "COMPRA",
+      "simbolo": "JPM",
+      "cantidad": 25,
+      "precio": 155.00,
+      "monto_total": 3875.00
+    }
+  ],
+  "configuracion": {
+    "stop_loss_global": 5.0,
+    "take_profit_conservador": 8.0,
+    "take_profit_moderado": 15.0,
+    "take_profit_agresivo": 25.0,
+    "limite_concentracion": 20.0,
+    "limite_perdida_diaria": 3.0,
+    "comision_compra": 0.001,
+    "comision_venta": 0.001
+  },
+  "metricas": {
+    "rendimiento_total": 4.85,
+    "mejor_posicion": "MSFT",
+    "peor_posicion": "GOOGL",
+    "dias_operando": 95,
+    "numero_transacciones": 5
+  }
+}

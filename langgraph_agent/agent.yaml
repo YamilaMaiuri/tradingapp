@@ -1,0 +1,15 @@
+spec_version: v1
+kind: agent
+name: trading-analyst-agent
+title: Agente de Trading Inteligente
+description: Sistema multi-agente con reglas de negocio para operaciones automáticas de trading
+framework: langgraph
+
+deployment:
+  code_bundle:
+    entrypoint: "agent:create_agent"
+
+checkpointer:
+  type: memory
+
+# Made with Bob

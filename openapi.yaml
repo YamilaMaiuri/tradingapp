@@ -8,9 +8,9 @@ info:
     email: support@trading-agent.com
 
 servers:
-  - url: https://tu-url-de-render.onrender.com
-    description: Servidor de producción en Render
-  - url: http://localhost:5000
+  - url: https://trading-agent-api.2925a7i62z1m.us-east.codeengine.appdomain.cloud
+    description: IBM Code Engine deployment
+  - url: http://localhost:8080
     description: Servidor de desarrollo local
 
 paths:

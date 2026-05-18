@@ -1,0 +1,9 @@
+{
+  "dependencies": [
+    "."
+  ],
+  "graphs": {
+    "trading_agent": "./agent.py:graph"
+  },
+  "env": ".env"
+}
