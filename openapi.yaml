@@ -1,0 +1,393 @@
+openapi: 3.0.0
+info:
+  title: Trading Agent API - ICBC
+  description: API REST para agente de trading con reglas de negocio automatizadas
+  version: 1.0.0
+  contact:
+    name: Trading Agent Support
+    email: support@trading-agent.com
+
+servers:
+  - url: https://tu-url-de-render.onrender.com
+    description: Servidor de producción en Render
+  - url: http://localhost:5000
+    description: Servidor de desarrollo local
+
+paths:
+  /health:
+    get:
+      summary: Health Check
+      description: Verifica que el servicio esté funcionando correctamente
+      operationId: healthCheck
+      tags:
+        - System
+      responses:
+        '200':
+          description: Servicio funcionando correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  service:
+                    type: string
+                    example: Trading Agent API - ICBC
+                  version:
+                    type: string
+                    example: 1.0.0
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /api/execute_order:
+    post:
+      summary: Ejecutar Orden
+      description: Ejecuta una orden de compra o venta en el mercado indicado
+      operationId: executeOrder
+      tags:
+        - Trading
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - activo
+                - tipo
+                - cantidad
+                - mercado
+                - regla_origen
+              properties:
+                activo:
+                  type: string
+                  description: Símbolo del activo a operar
+                  example: YPF
+                tipo:
+                  type: string
+                  enum: [COMPRA, VENTA]
+                  description: Tipo de operación
+                  example: COMPRA
+                cantidad:
+                  type: number
+                  description: Cantidad de activos a operar
+                  example: 1000
+                mercado:
+                  type: string
+                  enum: [BYMA, A3]
+                  description: Mercado donde ejecutar la orden
+                  example: BYMA
+                regla_origen:
+                  type: string
+                  description: ID de la regla que originó la orden
+                  example: R1
+      responses:
+        '200':
+          description: Orden ejecutada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: EJECUTADA
+                  orden_id:
+                    type: string
+                    example: ORD-20240517-001
+                  precio_fill:
+                    type: number
+                    example: 935.50
+                  timestamp:
+                    type: string
+                    format: date-time
+                  mercado:
+                    type: string
+                    example: BYMA
+                  activo:
+                    type: string
+                    example: YPF
+                  tipo:
+                    type: string
+                    example: COMPRA
+                  cantidad:
+                    type: number
+                    example: 1000
+                  regla_origen:
+                    type: string
+                    example: R1
+                  monto_total:
+                    type: number
+                    example: 935500.00
+        '400':
+          description: Error en los parámetros de entrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/get_portfolio_state:
+    get:
+      summary: Obtener Estado del Portfolio
+      description: Retorna el estado actual del portfolio del cliente ICBC
+      operationId: getPortfolioState
+      tags:
+        - Portfolio
+      responses:
+        '200':
+          description: Estado del portfolio obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posiciones:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        activo:
+                          type: string
+                          example: YPF
+                        cantidad:
+                          type: number
+                          example: 10000
+                        precio_promedio:
+                          type: number
+                          example: 1250.00
+                        precio_actual:
+                          type: number
+                          example: 1284.50
+                        valor_actual:
+                          type: number
+                          example: 12845000
+                        ganancia_perdida:
+                          type: number
+                          example: 345000
+                        ganancia_pct:
+                          type: number
+                          example: 2.76
+                  cash_disponible:
+                    type: number
+                    example: 5000000
+                  valor_total_portfolio:
+                    type: number
+                    example: 25627500
+                  valor_total_posiciones:
+                    type: number
+                    example: 20627500
+                  limite_perdida_diaria:
+                    type: number
+                    example: 2000000
+                  perdida_acumulada_hoy:
+                    type: number
+                    example: 87500
+                  exposicion_pct:
+                    type: number
+                    example: 80.5
+                  timestamp:
+                    type: string
+                    format: date-time
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/get_business_rules:
+    get:
+      summary: Obtener Reglas de Negocio
+      description: Retorna el conjunto de reglas de negocio activas para el motor de trading
+      operationId: getBusinessRules
+      tags:
+        - Rules
+      responses:
+        '200':
+          description: Reglas de negocio obtenidas exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reglas:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: R1
+                        nombre:
+                          type: string
+                          example: Compra correlacionada YPF-GGAL
+                        condicion:
+                          type: string
+                          example: YPF sube más del 2%
+                        accion:
+                          type: string
+                          example: Evaluar compra de GGAL
+                        parametros:
+                          type: object
+                          additionalProperties: true
+                          example:
+                            umbral_pct: 2.0
+                            activo_trigger: YPF
+                            activo_accion: GGAL
+                        activa:
+                          type: boolean
+                          example: true
+                        prioridad:
+                          type: integer
+                          example: 1
+                  total_reglas:
+                    type: integer
+                    example: 5
+                  reglas_activas:
+                    type: integer
+                    example: 5
+                  timestamp:
+                    type: string
+                    format: date-time
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/get_market_prices:
+    post:
+      summary: Obtener Precios de Mercado
+      description: Retorna los precios actuales de los activos del mercado BYMA y A3
+      operationId: getMarketPrices
+      tags:
+        - Market Data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - activos
+              properties:
+                activos:
+                  type: array
+                  items:
+                    type: string
+                  description: Lista de activos a consultar
+                  example: ["YPF", "AL30", "GGAL", "USD"]
+      responses:
+        '200':
+          description: Precios obtenidos exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    precio:
+                      type: number
+                      example: 1284.50
+                    variacion_pct:
+                      type: number
+                      example: 2.3
+                    mercado:
+                      type: string
+                      example: BYMA
+                    precio_a3:
+                      type: number
+                      example: 940.20
+                      description: Solo para activos con cotización en A3
+                    spread_pct:
+                      type: number
+                      example: 0.55
+                      description: Spread entre BYMA y A3
+                    volumen:
+                      type: integer
+                      example: 1500000
+                    apertura:
+                      type: number
+                      example: 1275.00
+                    maximo:
+                      type: number
+                      example: 1295.00
+                    minimo:
+                      type: number
+                      example: 1270.00
+                example:
+                  YPF:
+                    precio: 1284.50
+                    variacion_pct: 2.3
+                    mercado: BYMA
+                    volumen: 1500000
+                  AL30:
+                    precio: 62.15
+                    variacion_pct: -1.1
+                    mercado: BYMA
+                    volumen: 3500000
+                  GGAL:
+                    precio: 935.00
+                    variacion_pct: 0.8
+                    mercado: BYMA
+                    precio_a3: 940.20
+                    spread_pct: 0.55
+                    volumen: 850000
+                  timestamp:
+                    type: string
+                    format: date-time
+        '400':
+          description: Error en los parámetros de entrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+tags:
+  - name: System
+    description: Endpoints del sistema
+  - name: Trading
+    description: Operaciones de trading
+  - name: Portfolio
+    description: Gestión de portfolio
+  - name: Rules
+    description: Reglas de negocio
+  - name: Market Data
+    description: Datos de mercado
+
+# Made with Bob
