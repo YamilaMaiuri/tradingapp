@@ -1,32 +1,88 @@
-# Trading Multi-Agente - Demo ICBC
+# Trading Agent API - ICBC Demo
 
-Sistema de trading multi-agente desarrollado para demostración en ICBC, utilizando IBM watsonx.orchestrate para la coordinación y orquestación de agentes inteligentes.
+API REST con 4 herramientas (tools) para agente de trading con watsonx.orchestrate.
 
-## Descripción
+## 🔧 Tools Disponibles
 
-Este proyecto implementa un sistema de trading automatizado basado en múltiples agentes especializados que trabajan de forma coordinada para:
+### 1. **execute_order** - Ejecutar Órdenes
+Ejecuta órdenes de compra/venta y modifica el portfolio real.
+- **Endpoint:** `POST /api/execute_order`
+- **Persiste datos en:** `data/portfolio.json` y `data/orders.json`
 
-- Analizar mercados financieros
-- Generar señales de trading
-- Gestionar riesgos
-- Ejecutar operaciones
+### 2. **get_portfolio_state** - Estado de Cartera
+Obtiene el estado actual del portfolio.
+- **Endpoint:** `GET /api/get_portfolio_state`
+- **Lee desde:** `data/portfolio.json`
 
-## Tecnologías
+### 3. **get_business_rules** - Reglas de Negocio
+Obtiene las reglas de negocio activas.
+- **Endpoint:** `GET /api/get_business_rules`
+- **Lee desde:** `data/business_rules.json`
 
-- **IBM watsonx.orchestrate**: Orquestación de agentes y flujos de trabajo
-- **Python 3.8+**: Lenguaje principal de desarrollo
+### 4. **get_market_prices** - Precios de Mercado
+Obtiene precios de activos en BYMA y A3.
+- **Endpoint:** `POST /api/get_market_prices`
+- **Activos:** YPF, AL30, GGAL, USD
 
-## Estructura del Proyecto
+## 📊 Activos Soportados
+
+```python
+YPF:  $1284.50 (variación: +2.3%)
+AL30: $62.15   (variación: -1.1%)
+GGAL: $935.00  (variación: +0.8%)
+USD:  $1042.00 (variación: 0.0%)
+```
+
+## 🚀 Deployment en Code Engine
+
+### Archivos necesarios:
+- `api_server.py` - Servidor Flask con las 4 tools
+- `requirements_api.txt` - Dependencias Python
+- `Dockerfile` - Configuración para Code Engine
+- `openapi.yaml` - Especificación para watsonx.orchestrate
+
+### Pasos:
+1. Code Engine construye la imagen desde el Dockerfile
+2. Expone la API en puerto 8080
+3. Importar `openapi.yaml` en watsonx.orchestrate como Custom API
+
+## 📁 Estructura
 
 ```
 trading-demo/
-├── config/          # Configuración y credenciales
-├── agents/          # Implementación de agentes especializados
-├── models/          # Modelos de datos y lógica de negocio
-├── services/        # Servicios auxiliares
-└── ui/              # Interfaz de usuario
+├── api_server.py          # Servidor Flask con las 4 tools
+├── requirements_api.txt   # Dependencias
+├── Dockerfile            # Config para Code Engine
+├── openapi.yaml          # Spec para watsonx.orchestrate
+├── data/                 # Datos persistentes (JSON)
+│   ├── portfolio.json
+│   ├── orders.json
+│   └── business_rules.json
+└── README.md
 ```
 
-## Estado
+## 🔗 Conexión con watsonx.orchestrate
 
-🚧 Proyecto en desarrollo inicial - Demo ICBC
+1. Despliega en Code Engine
+2. Obtén la URL pública
+3. Actualiza `openapi.yaml` línea 11 con la URL
+4. Importa en watsonx.orchestrate: Skills → Add skills → Custom API
+
+## 💾 Persistencia de Datos
+
+Las tools modifican archivos JSON reales en `data/`:
+- Cada orden ejecutada modifica el portfolio
+- Los cambios persisten entre llamadas
+- Historial completo de órdenes
+
+## 🧪 Prueba Local
+
+```bash
+pip install -r requirements_api.txt
+python api_server.py
+```
+
+Luego:
+```bash
+curl http://localhost:8080/health
+curl http://localhost:8080/api/get_portfolio_state
