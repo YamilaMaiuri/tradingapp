@@ -8,6 +8,14 @@ from pathlib import Path
 app = Flask(__name__)
 CORS(app)
 
+# Precios mock de activos argentinos
+PRECIOS_MOCK = {
+    "YPF":  {"base": 1284.50, "variacion_pct": 2.3},
+    "AL30": {"base": 62.15,   "variacion_pct": -1.1},
+    "GGAL": {"base": 935.00,  "variacion_pct": 0.8},
+    "USD":  {"base": 1042.00, "variacion_pct": 0.0},
+}
+
 DATA_DIR = Path(__file__).parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
 
@@ -21,8 +29,8 @@ def init_data_files():
             "cash_ars": 150000.00,
             "cash_usd": 10000.00,
             "posiciones": [
-                {"activo": "YPF", "cantidad": 100, "precio_promedio": 16500.00, "mercado": "BYMA"},
-                {"activo": "AL30", "cantidad": 200, "precio_promedio": 325.50, "mercado": "BYMA"}
+                {"activo": "YPF", "cantidad": 100, "precio_promedio": 1284.50, "mercado": "BYMA"},
+                {"activo": "AL30", "cantidad": 200, "precio_promedio": 62.15, "mercado": "BYMA"}
             ],
             "last_updated": datetime.now().isoformat()
         }
@@ -63,7 +71,12 @@ def execute_order():
     portfolio = load_json(PORTFOLIO_FILE)
     orders_data = load_json(ORDERS_FILE)
     
-    precio = 16500 if data['activo'] == 'YPF' else 325
+    activo = data['activo']
+    if activo in PRECIOS_MOCK:
+        precio = PRECIOS_MOCK[activo]["base"]
+    else:
+        precio = 100.0
+    
     order_id = f"ORD-{len(orders_data['orders']) + 1:05d}"
     
     if data['tipo'] == 'compra':
@@ -108,16 +121,20 @@ def get_business_rules():
 @app.route('/api/get_market_prices', methods=['POST'])
 def get_market_prices():
     data = request.get_json()
-    activos = data.get('activos', ['YPF', 'AL30'])
+    activos = data.get('activos', list(PRECIOS_MOCK.keys()))
     precios = {}
     for activo in activos:
-        base = 16500 if activo == 'YPF' else 325
-        precios[activo] = {
-            'BYMA': {'bid': base, 'ask': base * 1.01, 'last': base},
-            'A3': {'bid': base * 1.005, 'ask': base * 1.015, 'last': base * 1.01}
-        }
-    return jsonify({'precios': precios, 'timestamp': datetime.now().isoformat()})
+        if activo in PRECIOS_MOCK:
+            base = PRECIOS_MOCK[activo]["base"]
+            var  = PRECIOS_MOCK[activo]["variacion_pct"]
+            precios[activo] = {
+                "BYMA": {"bid": base, "ask": round(base * 1.001, 2), "last": base},
+                "A3":   {"bid": round(base * 1.005, 2), "ask": round(base * 1.006, 2), "last": round(base * 1.005, 2)},
+                "variacion_pct": var
+            }
+    return jsonify({"precios": precios, "timestamp": datetime.now().isoformat()})
 
 if __name__ == '__main__':
     print("🚀 Trading API Started")
+    print(f"📊 Activos disponibles: {', '.join(PRECIOS_MOCK.keys())}")
     app.run(host='0.0.0.0', port=8080, debug=False)
